@@ -1,0 +1,134 @@
+public class Figure implements FigureADT {
+
+	private int the_id;
+	private int the_width;
+	private int the_height;
+	private int the_type;
+	private Position the_pos;
+	private BinarySearchTree figTree;
+	
+	/*
+	 * constructor
+	 */
+	public Figure(int id, int width, int height, int type, Position pos) {
+		figTree = new BinarySearchTree();
+		the_id=id;
+		the_width=width;
+		the_height=height;
+		the_type=type;
+		the_pos=pos;
+	}
+	
+	/*
+	 *setter for type 
+	 */
+	public void setType(int type) {
+		the_type=type;
+	}
+
+	/*
+	 * getter for width
+	 */
+	public int getWidth() {
+		return this.the_width;
+	}
+	
+	/*
+	 * getter for height
+	 */
+	public int getHeight() {
+		return this.the_height;
+	}
+	
+	/*
+	 * getter for type
+	 */
+	public int getType() {
+		return this.the_type;
+	}
+	
+	/*
+	 * getter for ID
+	 */
+	public int getId() {
+		return this.the_id;
+	}
+	
+	/*
+	 * private method to get figure's BST
+	 */
+	private BinarySearchTree getBST() {
+		return this.figTree;
+	}
+	
+	/*
+	 * getter for offset coordinate value
+	 */
+	public Position getOffset() {
+		return this.the_pos;
+	}
+	
+	/*
+	 * setter for offset coordinate value
+	 */
+	public void setOffset(Position value){
+		this.the_pos=value;
+	}
+	
+	/*
+	 * method to add a pixel to a DictEntry
+	 */
+	public void addPixel(int x, int y, int color) throws BSTException {
+		DictEntry newpix = new DictEntry((new Position(x,y)), color);	
+
+		//insert it into binary search tree associated with 'this' figure
+		this.getBST().insert(newpix);
+	}
+
+	/*
+	 * method to detect intersection of figures
+	 * return true if 'this' intersects 'fig'
+	 * return false if they do not intersect
+	 */
+	public boolean intersects(Figure fig) {
+		//get trees associated with 'this' figure and fig
+		BinarySearchTree thisTree = this.getBST(); //tree for what method is invoked on
+		BinarySearchTree figTree = fig.getBST(); //tree for parameter
+		//get dictEntries of smallest pixels in each tree
+		DictEntry little=thisTree.smallest();
+		
+		//get rectangle points
+		int p1x=this.getOffset().getX();
+		int p1y=this.getOffset().getY();
+		int p2x=this.getWidth()+this.getOffset().getX();
+		int p2y=this.getHeight()+this.getOffset().getY();
+		int p3x=fig.getOffset().getX();
+		int p3y=fig.getOffset().getY();
+		int p4x=fig.getWidth()+fig.getOffset().getX();
+		int p4y=fig.getHeight()+this.getOffset().getY();
+		
+		//check if crosses window border
+		if (p1x + this.getOffset().getX() + p4x >= 1000 || p1y + this.getOffset().getY() + 
+				p4y >= 1000 || p1x + this.getOffset().getX() + p4y >= 1000 || p1y + 
+				this.getOffset().getY() + p4x >= 1000) {
+			return true;
+		}
+		//compare rectangles for intersection
+		if (p2y==p3y && p1y==p4y && p2x==p3x && p1x==p4x) {
+			return true;
+		}
+			//looping from smallest to largest
+		//while ((thisTree.successor(little.getPosition())) != null) {
+		
+			//checking pixels
+				if ((p1x)==(p4x+p3x-p1x) && (p1y)==(p4y+p3y-p1y)) {
+					return true;
+				}
+				//increment node to next largest one
+				//little=thisTree.successor(little.getPosition());
+			//}
+				
+			//there is no intersection, so return false
+		return false;
+	}
+}
