@@ -1,0 +1,48 @@
+
+public class Position {
+
+	//attributes
+	private int xcoor;
+	private int ycoor;
+/*
+ * constructor
+ */
+	public Position(int x, int y) {
+		xcoor=x;
+		ycoor=y;
+	}
+	
+/*
+ * getter that returns X coordinate
+ */
+	public int getX() {
+		return this.xcoor;
+	}
+	
+/*
+ * getter that returns Y coordinate
+ */
+	public int getY() {
+		return this.ycoor;
+	}
+	
+/*
+ * compares 'this' position with 'p' using row order
+ */
+	public int compareTo(Position p) {
+		//return -1 if this is less than p
+		//(x,y) < (x1, y1) if y < y1 or y=y1 and x<x1
+		if (this.getY() < p.getY() || (this.getY() == p.getY() && this.getX() < p.getX())) {
+			return -1;
+		}
+		
+		//return 0 if they're equal
+		else if (this.getY()==p.getY() && this.getX()==p.getX())  {
+			return 0;
+		}
+
+		//if it's not equal or less than, it must be greater, so return 1
+		return 1;
+	}
+		
+}
