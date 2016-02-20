@@ -1,0 +1,29 @@
+
+public class DictEntry {
+
+	//attributes
+	private Position pos;
+	private int c;
+	
+	/*
+	 * constructor
+	 */
+	public DictEntry(Position p, int color) {
+		pos=p;
+		c=color;
+	}
+	
+	/*
+	 * getter that returns position of DictEntry
+	 */
+	public Position getPosition() {
+		return this.pos;
+	}
+	
+	/*
+	 * getter that returns color of DictEntry
+	 */
+	public int getColor() {
+		return this.c;
+	}
+}
