@@ -1,0 +1,62 @@
+/*
+ * class of nodes to be added to BST
+ */
+public class Node {
+
+	public DictEntry contents;
+	public Node rightChild;
+	public Node leftChild;
+	public Node root;
+
+	/*
+	 * constructor
+	 */
+	public Node(DictEntry d, Node p, Node l, Node r) {
+		//contains a DictEntry
+		contents=d;
+		//reference to parent
+		root=p;
+		//references to children
+		leftChild=l;
+		rightChild=r;
+	}
+	
+	/*
+	 * getters
+	 */
+	public DictEntry getDictEntry() {
+		return this.contents;
+	}
+	
+	public Node getRight() {
+		return this.rightChild;
+	}
+	
+	public Node getLeft() {
+		return this.leftChild;
+	}
+
+	public Node getParent() {
+		return this.root;
+	}
+	
+	/*
+	 * setters
+	 */
+	
+	public void setRight(Node newR) {
+		this.rightChild=newR;
+	}
+	
+	public void setLeft(Node newL) {
+		this.leftChild=newL;
+	}
+
+	public void setParent(Node newP) {
+		this.root=newP;
+	}
+	
+	public void setDictEntry(DictEntry newD) {
+		this.contents=newD;
+	}
+}
