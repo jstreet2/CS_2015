@@ -1,0 +1,364 @@
+public class BinarySearchTree implements BinarySearchTreeADT {
+
+	private Node tree_root;
+	
+/**
+ * CONSTRUCTOR	
+ */
+	public BinarySearchTree() {
+		//create tree where root is an empty leaf node
+		tree_root = new Node(null, null, null, null);
+	}
+	
+/**
+ * FIND METHODS *
+ */
+	//private find method, returns a node
+	private Node find(Position key, Node n) {
+
+		Node p=n;		
+		//loop thru while p != leaf
+		while (p.getDictEntry() != null) {
+			
+			//check if key is in p
+			if (key.compareTo(p.getDictEntry().getPosition()) == 0) {
+				return p;
+			}
+				//go to left child if lesser
+				if (key.compareTo(p.getDictEntry().getPosition()) == -1) {
+					p=p.getLeft();
+					if (p==null) {
+						return null;
+					}
+				}
+				
+				//otherwise, it must be greater so go to right child
+				else {
+					p=p.getRight();
+					if (p==null) {
+						return null;
+					}
+				}
+			}
+		//return the node that was found
+		return p;
+	} //end of find
+
+	//public find method, returns DictEntry
+	public DictEntry find(Position key) {
+		//find the node containing the key
+		Node nd=find(key, tree_root);
+		//return its contents as a DictEntry
+		return nd.getDictEntry();
+	}
+	
+/**
+ * INSERT METHOD *
+ */
+
+	//adds DictEntry to tree
+	public void insert(DictEntry data) throws BSTException {
+		//check if dictEntry is already in tree
+		Node p=find(data.getPosition(), tree_root);
+		
+		//if not a leaf node or is a duplicate, throw exception
+		if (p.getDictEntry() != null) {
+				throw new BSTException("Error: cannot insert! Duplicate/internal node");
+			}
+			
+			//otherwise, add it to the tree
+			//set its left/right children to be null
+			else {
+				p.setDictEntry(data);
+				p.setLeft(new Node(null, p, null, null));
+				p.setRight(new Node(null, p, null, null));
+			}
+		} //end of insert
+	
+/**
+ * REMOVE METHOD *
+ */
+	public void remove(Position key) throws BSTException {
+		//begin at the top of the tree
+		//make node for current spot, and one for parent
+		Node current=tree_root;
+		Node parent=tree_root;
+		
+		//flag to determine if checking left or right
+		boolean left=true;
+		
+		/*
+		 * FINDING THE KEY
+		 */
+		
+		//while the current node does not contain the key,
+		while ((key).compareTo(current.getDictEntry().getPosition()) != 0) {
+			parent=current;
+			
+			//check if key is less than parent
+			//if it is, we'll search left
+			if (key.compareTo((current.getDictEntry()).getPosition()) == -1) {
+				left=true;
+				current=current.getLeft();
+			}
+			
+			//check right side otherwise
+			else {				
+				left=false;
+				current=current.getRight();
+			}
+			
+			//if we can't find what we want to remove, throw exception
+			if (current.getDictEntry()==null){
+				throw new BSTException("Cannot remove: not in tree!");
+			}
+		}
+		
+		/*
+		 * DELETING THE NODE CONTAINING KEY
+		 */
+		
+		/*
+		 * CASE 1: NO CHILDREN
+		 */
+		
+		//no children, and is root: remove root
+		if (current.getLeft() == null && current.getRight() == null) {
+			if (current==tree_root) {
+				tree_root.setDictEntry(null);
+			}
+			
+			/*
+			 * CASE 2: LEFT CHILD
+			 */
+			else if (left==true) {
+				//if there's a left node delete it
+				parent=parent.getLeft();
+				parent.setDictEntry(null);
+			}
+			
+			/*
+			 * CASE 3: RIGHT CHILD
+			 */
+			else {
+				//otherwise, right gets deleted
+				parent=parent.getRight();
+				parent.setDictEntry(null);
+			}
+		}
+			//if there's no right child,
+			else if (current.getRight() == null) {
+				
+				//set left node of current to null
+				if (current==tree_root) {
+					current.setLeft(tree_root);
+				}
+				
+				else if (left==true) {
+					current.setDictEntry(current.getLeft().getDictEntry());
+					(current.getLeft()).setDictEntry(null);
+				}
+				
+				else 
+					current.setDictEntry(current.getRight().getDictEntry());
+					(current.getRight()).setDictEntry(null);
+				}	
+		
+			//if there's no left child,
+			else if (current.getLeft() == null) {
+				
+				if(current==tree_root) {
+					tree_root=current.getRight();
+						}
+		
+				else if (left==true) {
+					current.setDictEntry(current.getRight().getDictEntry());
+					(current.getRight()).setDictEntry(null);
+				}
+		
+				else {
+					current.setDictEntry(current.getLeft().getDictEntry());
+					(current.getLeft()).setDictEntry(null);
+				}
+			}
+			
+		/*
+		 * CASE 4: 2 CHILDREN
+		 */
+			else {	
+				//find the successor
+				DictEntry d=successor(current.getDictEntry().getPosition());
+				Node other=new Node(d, null, null, null);
+				//set current node's dictEntry to that of successor's
+				current.setDictEntry(other.getDictEntry());
+					
+				//if we're currently at the root, set it to successor
+					if (current==tree_root) {
+						tree_root=other;
+					}
+					
+					//otherwise, set left of successor to null
+					else if ((other.getLeft()) != null) {
+					(other.getLeft()).setDictEntry(null);
+					
+				}
+				
+				//otherwise, set right of successor to null
+				else if ((other.getRight()) != null) {
+					(other.getRight()).setDictEntry(null);
+			}		
+		}
+	} //end of remove
+
+/**
+ * SUCCESSOR METHOD *
+ */
+	
+	public DictEntry successor (Position key) {
+		
+		//if the root is null, return null
+		//if (tree_root.getDictEntry()==null) {
+		//	return null;
+		//}
+		
+		//find 'key' in tree
+		Node p=find(key,tree_root);
+		
+		//if found node is null or its right child is null
+		if (p.getDictEntry()==null || (p.getRight()).getDictEntry() == null) {
+
+			//get the found node's parent
+			Node dad=p.getParent();
+			
+			//if it's null, return null
+			if (p.getParent() == null) {
+				return null;
+			}
+				//while the left child isn't the current node,
+				//set current to parent, set parent to grandparent
+				while (dad.getLeft() != p) {
+					p=dad;
+					dad=p.getParent();
+				}
+				
+				//return the final parent
+				return dad.getDictEntry();
+		}
+		
+		//otherwise, if there is a right child,
+		else if (p.getRight().getDictEntry() != null){
+			//get right child
+			Node child=p.getRight();
+				//while it has a left child, set current to left child
+				//set left child to its left child
+				while (child.getLeft() != null) {
+					p=child;
+					child=p.getLeft();
+				}
+				//return final child found
+				return p.getDictEntry();
+		}
+		//if nothing is found, return null
+		return null;
+	}//end of successor
+
+/**
+ * PREDECESSOR METHOD *
+ */
+	
+	public DictEntry predecessor(Position key) {
+		//if r is a leaf, return null
+			if (tree_root.getDictEntry() == null) {
+					return null;
+				}
+				
+			//find the place in the tree for r and k
+			Node p=find(key, tree_root);
+				
+			//if p's left child is not an internal node,
+			//return the largest right child
+			if ((p.getDictEntry()==null || (p.getLeft()).getDictEntry()==null)) {
+				Node mom=p.getParent();
+				
+				//return null if no parent
+				if (p.getParent() == null) {
+					return null;
+				}
+				 //while p is not the right child of its parent,
+				//keep moving right by replacing their values
+					while (mom.getRight() != p) {
+						p=mom;
+						mom=p.getParent();
+					}
+					return mom.getDictEntry();
+				}
+			
+			//if there is a left child,
+			else if (p.getLeft().getDictEntry() != null){
+				Node child=p.getLeft();
+				
+				//replace values and move right while there is a right child
+					while (child.getRight() != null) {
+						p=child;
+						child=p.getRight();
+					}
+					return p.getDictEntry();
+				}
+			//return null if no predecessor found
+				return null;
+				
+			} //end predecessor
+
+/**
+ * SMALLEST METHODS *	
+ */
+	
+	//private smallest method, returns Node
+	private Node smallest(Node r) {
+		Node current = tree_root;
+		//if root has no data, return null
+		if (r.getDictEntry() == null) {
+			return null;
+		}
+		else {
+			//keep going left until you reach the farthest leaf
+			while (current.getLeft().getDictEntry() != null) {
+				//current.setLeft(r);
+				current=current.getLeft();
+			}
+		}
+		//return this farthest left value
+		return current;
+	} //end smallest
+	
+	//public smallest method, returns DictEntry
+	public DictEntry smallest() {
+		return (smallest(tree_root)).getDictEntry();
+	}
+
+/**
+ * LARGEST METHODS *
+ */
+	//private largest method, returns Node
+	private Node largest(Node root) {
+		Node temp=null;
+		//if root has no data, return null
+		if (root.getDictEntry() == null) {
+			return null;
+		}
+		else {
+			//keep going right until you reach the farthest leaf
+			while (root.getRight() != null) {
+				temp=largest(root.getRight());
+			}
+		}
+		//return this farthest right value
+		return temp;
+	} //end largest
+
+	//public largest method, returns DictEntry
+	public DictEntry largest() {
+		return (largest(tree_root).getDictEntry());
+	}
+
+} //end class
